@@ -2,6 +2,7 @@
 arg:            .word 9, 8, 6, 5, 3, 2, 1, 0, -1, -3
 arg_size:       .word 10
 str:            .string "Before sort:"
+str2:           .string "After sort:"
 new_line:       .string "\n"
 comma:          .string ","
 
@@ -102,6 +103,17 @@ main:
         lw      t5, -56(sp)
         lw      t6, -60(sp)
 
+        # printf("---- After sort ----\n");
+        la      a0, str2
+        li      a7, 4
+        ecall
+        la      a0, new_line
+        li      a7, 4
+        ecall
+
+        # show array
+        la      a0, arg
+        lw      a1, arg_size
 
 	# exit program
 	li	a7, 10
@@ -368,11 +380,14 @@ merge:
 	mv	t1, a3
 	sub	t1, t1, a1
 	addi	t1, t1, 1
+	addi	t3, a2, 1
+	mv	t2, a1
+	mv	t0, x0
 
 merge_loop_start:
 	bgeu    t0, t1, merge_out
 
-	bgeu	t2, a2, l_index
+	bgeu	a2, t2, l_index
 	addi	t4, x0, 1024 
 	jal	x0, l_index_out
 l_index:
@@ -381,9 +396,9 @@ l_index:
 	lw	t4, 0(s1)
 l_index_out:
 	
-	bgeu	t1, a3, r_index
-	addi	t2, x0, 1024
-	jal	x0, l_index_out
+	bgeu	a3, t3, r_index
+	addi	t5, x0, 1024
+	jal	x0, r_index_out
 r_index:
 	slli	s1, t3, 2
 	add	s1, s1, a0
@@ -407,6 +422,7 @@ lbr:
 lbr_out:
 	jal     x0, merge_loop_start 
 
+merge_out:
 	# memcpy(&arg[start], copy, len * sizeof(int));
 	slli	s1, a1, 2
 	add	a0, a0, a1
@@ -450,7 +466,6 @@ lbr_out:
         lw      t5, -56(sp)
         lw      t6, -60(sp)
 
-merge_out:
 	# exit func
 	mv	sp, s0 
 	lw	ra, -4(sp)
@@ -494,6 +509,7 @@ memcpy_start:
 	lw	t2, 0(t1)
 	add	t1, a0, t0
 	sw	t2, 0(t1)
+	addi	t0, t0, 1
 	jal     x0, memcpy_start 
 
 memcpy_out:
