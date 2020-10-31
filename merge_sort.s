@@ -357,7 +357,146 @@ merge:
         sw      s11, 12(sp)
 	addi	s0, sp, 64
 
+	# start
+	# t0: i
+	# t1: len
+	# t2: l_index
+	# t3: r_index
+	# t4: l_value
+	# t5: r_value
+	addi    sp, sp, -152  # allocate 38 int space on stack
+	mv	t1, a3
+	sub	t1, t1, a1
+	addi	t1, t1, 1
+
+merge_loop_start:
+	bgeu    t0, t1, merge_out
+
+	begu	t2, a2, l_index
+	addi	t4, x0, 2147483647
+	jal	x0, l_index_out
+l_index:
+	slli	s1, t2, 2
+	add	s1, s1, a0
+	lw	t4, s1
+l_index_out:
+	
+	begu	t1, a3, r_index
+	addi	t2, x0, 2147483647
+	jal	x0, l_index_out
+r_index:
+	slli	s1, t3, 2
+	add	s1, s1, a0
+	lw	t5, s1
+r_index_out:
+
+	beg	t4, t5, lbr
+	slli	s1, t0, 2
+	add	s1, s1, sp
+	sw	t4, 0(s1)
+	addi	t0, t0, 1
+	addi	t2, t2, 1
+	jal	x0, lbr_out
+lbr:
+	slli	s1, t0, 2
+	add	s1, s1, sp
+	sw	t5, 0(s1)
+	addi	t0, t0, 1
+	addi	t3, t3, 1
+	jal	x0, lbr_out
+lbr_out:
+	jal     x0, merge_loop_start 
+
+	# memcpy(&arg[start], copy, len * sizeof(int));
+	slli	s1, a1, 2
+	add	a0, a0, a1
+	mv	a1, sp
+	slli	a2, t1, 2
+	## caller register
+	addi    sp, sp, -64  # 32 bits alignment
+        sw      a0, 60(sp)
+        sw      a1, 56(sp)
+        sw      a2, 52(sp)
+        sw      a3, 48(sp)
+        sw      a4, 44(sp)
+        sw      a5, 40(sp)
+        sw      a6, 36(sp)
+        sw      a7, 32(sp)
+        sw      t0, 28(sp)
+        sw      t1, 24(sp)
+        sw      t2, 20(sp)
+        sw      t3, 16(sp)
+        sw      t4, 12(sp)
+        sw      t5, 8(sp)
+        sw      t6, 4(sp)
+        
+	jal     ra, memcpy
+
+	## caller register
+	addi    sp, sp, 64  # 32 bits alignment
+        lw      a0, -4(sp)
+        lw      a1, -8(sp)
+        lw      a2, -12(sp)
+        lw      a3, -16(sp)
+        lw      a4, -20(sp)
+        lw      a5, -24(sp)
+        lw      a6, -28(sp)
+        lw      a7, -32(sp)
+        lw      t0, -36(sp)
+        lw      t1, -40(sp)
+        lw      t2, -44(sp)
+        lw      t3, -48(sp)
+        lw      t4, -52(sp)
+        lw      t5, -56(sp)
+        lw      t6, -60(sp)
+
 merge_out:
+	# exit func
+	mv	sp, s0 
+	lw	ra, -4(sp)
+	lw	s0, -8(sp)
+	lw	s1, -12(sp)
+	lw	s2, -16(sp)
+	lw	s3, -20(sp)
+	lw	s4, -24(sp)
+	lw	s5, -28(sp)
+	lw	s6, -32(sp)
+	lw	s7, -36(sp)
+	lw	s8, -40(sp)
+	lw	s9, -44(sp)
+	lw	s10, -48(sp)
+	lw	s11, -52(sp)
+	jalr	x0, ra, 0
+
+
+memcpy:
+	# entry func
+	addi    sp, sp, -64  # 32 bits alignment
+        sw      ra, 60(sp)
+        sw      s0, 56(sp)
+        sw      s1, 52(sp)
+        sw      s2, 48(sp)
+        sw      s3, 44(sp)
+        sw      s4, 40(sp)
+        sw      s5, 36(sp)
+        sw      s6, 32(sp)
+        sw      s7, 28(sp)
+        sw      s8, 24(sp)
+        sw      s9, 20(sp)
+        sw      s10, 16(sp)
+        sw      s11, 12(sp)
+	addi	s0, sp, 64
+
+	mv	t0, x0
+memcpy_start:
+	begu	t0, a2, memcpy_out
+	add	t1, a1, t0
+	lw	t2, 0(t1)
+	add	t1, a0, t0
+	sw	t2, 0(t1)
+	jal     x0, memcpy_start 
+
+memcpy_out:
 	# exit func
 	mv	sp, s0 
 	lw	ra, -4(sp)
