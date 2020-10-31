@@ -189,7 +189,7 @@ merge_sort:
 
 	bgeu	a1, a2, merge_sort_out
 	add	t0, a1, a2
-	srai	t1, t0. 1
+	srai	t1, t0, 1
 
 	# merge_sort(arg, start, mid);
 	mv	a2, t1
@@ -372,25 +372,25 @@ merge:
 merge_loop_start:
 	bgeu    t0, t1, merge_out
 
-	begu	t2, a2, l_index
-	addi	t4, x0, 2147483647
+	bgeu	t2, a2, l_index
+	addi	t4, x0, 1024 
 	jal	x0, l_index_out
 l_index:
 	slli	s1, t2, 2
 	add	s1, s1, a0
-	lw	t4, s1
+	lw	t4, 0(s1)
 l_index_out:
 	
-	begu	t1, a3, r_index
-	addi	t2, x0, 2147483647
+	bgeu	t1, a3, r_index
+	addi	t2, x0, 1024
 	jal	x0, l_index_out
 r_index:
 	slli	s1, t3, 2
 	add	s1, s1, a0
-	lw	t5, s1
+	lw	t5, 0(s1)
 r_index_out:
 
-	beg	t4, t5, lbr
+	bge	t4, t5, lbr
 	slli	s1, t0, 2
 	add	s1, s1, sp
 	sw	t4, 0(s1)
@@ -489,7 +489,7 @@ memcpy:
 
 	mv	t0, x0
 memcpy_start:
-	begu	t0, a2, memcpy_out
+	bgeu	t0, a2, memcpy_out
 	add	t1, a1, t0
 	lw	t2, 0(t1)
 	add	t1, a0, t0
