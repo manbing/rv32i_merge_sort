@@ -506,9 +506,9 @@ memcpy:
 memcpy_start:
 	bgeu	t0, a2, memcpy_out
 	add	t1, a1, t0
-	lw	t2, 0(t1)
+	lb	t2, 0(t1)
 	add	t1, a0, t0
-	sw	t2, 0(t1)
+	sb	t2, 0(t1)
 	addi	t0, t0, 1
 	jal     x0, memcpy_start 
 
