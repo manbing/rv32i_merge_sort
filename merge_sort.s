@@ -1,6 +1,6 @@
 .data
-arg:            .word 9, 8, 6, 5, 3, 2, 1, 0, -1, -3
-arg_size:       .word 10
+arg:            .word 9, 8, 7
+arg_size:       .word 3
 str:            .string "Before sort:"
 str2:           .string "After sort:"
 new_line:       .string "\n"
