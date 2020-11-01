@@ -104,6 +104,9 @@ main:
         lw      t6, -60(sp)
 
         # printf("---- After sort ----\n");
+        la      a0, new_line
+        li      a7, 4
+        ecall
         la      a0, str2
         li      a7, 4
         ecall
@@ -114,6 +117,44 @@ main:
         # show array
         la      a0, arg
         lw      a1, arg_size
+	
+	## caller register
+	addi    sp, sp, -64  # 32 bits alignment
+        sw      a0, 60(sp)
+        sw      a1, 56(sp)
+        sw      a2, 52(sp)
+        sw      a3, 48(sp)
+        sw      a4, 44(sp)
+        sw      a5, 40(sp)
+        sw      a6, 36(sp)
+        sw      a7, 32(sp)
+        sw      t0, 28(sp)
+        sw      t1, 24(sp)
+        sw      t2, 20(sp)
+        sw      t3, 16(sp)
+        sw      t4, 12(sp)
+        sw      t5, 8(sp)
+        sw      t6, 4(sp)
+        
+	jal     ra, show_array
+
+	## caller register
+	addi    sp, sp, 64  # 32 bits alignment
+        lw      a0, -4(sp)
+        lw      a1, -8(sp)
+        lw      a2, -12(sp)
+        lw      a3, -16(sp)
+        lw      a4, -20(sp)
+        lw      a5, -24(sp)
+        lw      a6, -28(sp)
+        lw      a7, -32(sp)
+        lw      t0, -36(sp)
+        lw      t1, -40(sp)
+        lw      t2, -44(sp)
+        lw      t3, -48(sp)
+        lw      t4, -52(sp)
+        lw      t5, -56(sp)
+        lw      t6, -60(sp)
 
 	# exit program
 	li	a7, 10
